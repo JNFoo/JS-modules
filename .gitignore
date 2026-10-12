@@ -1,5 +1,5 @@
-node_modules/
 *.pyc
-__pycache__/
-*.small.html
 *.slim.html
+*.small.html
+__pycache__/
+node_modules/

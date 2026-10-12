@@ -25,7 +25,7 @@ Both run seeded random play against your invariants. [`fuzz-kit`](../fuzz-kit/RE
 | Stuck check | Reports a state that lasts too long | Liveness: from anywhere, ordinary input must lead somewhere, with nudges to try to get out |
 | Replay | Same seed repeats the run | Same seed repeats the run, and `stopAt` stops on the exact failing operation; each failure carries the tail of operation names |
 | Extras | CPU throttling, viewport, init script | Input helpers (junk saves, key and pointer events), `strip-test-hooks.js` to keep test code out of the shipped file |
-| Size | About 100 lines | About 600 lines |
+| Size | About 6 KB of code | About 8 KB engine plus 7 KB of runners |
 
 Start with `fuzz-play` for a quick look at a click-style page. Move to `fuzz-kit` when the game has real state to steer through, or when you want one source file for the tested page and the shipped page.
 
