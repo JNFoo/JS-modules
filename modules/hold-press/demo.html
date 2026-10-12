@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>hold-press demo</title>
+<style>body{font:16px system-ui,sans-serif;text-align:center;padding:2rem;touch-action:manipulation}#b{font-size:2rem;padding:2rem 3rem;border-radius:1rem;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}</style>
+<h1>hold-press demo</h1><p>Tap = +1. Hold = +1 five times a second. Letting go adds nothing extra.</p>
+<button id="b">Press me</button><p>Count: <b id="n">0</b> · taps <b id="t">0</b> · hold presses <b id="h">0</b></p>
+<script src="hold-press.js"></script>
+<script>
+  var n = 0, t = 0, h = 0, N = document.getElementById('n'), T = document.getElementById('t'), H = document.getElementById('h');
+  b.addEventListener('click', function () { n++; t++; N.textContent = n; T.textContent = t; });
+  HoldPress.attach(b, { onPress: function () { n++; h++; N.textContent = n; H.textContent = h; } });
+</script>

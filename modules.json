@@ -1,0 +1,117 @@
+{
+  "name": "JS-modules",
+  "license": "MIT",
+  "copyright": "JNFoo",
+  "repository": "https://github.com/JNFoo/JS-modules",
+  "pages": "https://jnfoo.github.io/JS-modules/",
+  "origin": "Extracted from Apple Press, https://github.com/JNFoo/apple-press (play: https://jnfoo.github.io/apple-press/)",
+  "modules": [
+    {
+      "id": "stage-curtains",
+      "global": "StageCurtains",
+      "summary": "Velvet stage curtains that slide shut over a page, then fly open.",
+      "file": "modules/stage-curtains/stage-curtains.js",
+      "readme": "modules/stage-curtains/README.md",
+      "demo": "modules/stage-curtains/demo.html",
+      "dependencies": "none",
+      "formats": "browser global, CommonJS (module.exports)"
+    },
+    {
+      "id": "save-kit",
+      "global": "SaveKit",
+      "summary": "Safe localStorage saves, backup slot, checksummed copy-paste save codes.",
+      "file": "modules/save-kit/save-kit.js",
+      "readme": "modules/save-kit/README.md",
+      "demo": "modules/save-kit/demo.html",
+      "dependencies": "none",
+      "formats": "browser global, CommonJS (module.exports)"
+    },
+    {
+      "id": "hold-press",
+      "global": "HoldPress",
+      "summary": "Hold-to-repeat for buttons that survives Android Chrome pointercancel.",
+      "file": "modules/hold-press/hold-press.js",
+      "readme": "modules/hold-press/README.md",
+      "demo": "modules/hold-press/demo.html",
+      "dependencies": "none",
+      "formats": "browser global, CommonJS (module.exports)"
+    },
+    {
+      "id": "env-probes",
+      "global": "EnvProbes",
+      "summary": "Detects privacy modes that round timers, scramble canvas read-back or block storage.",
+      "file": "modules/env-probes/env-probes.js",
+      "readme": "modules/env-probes/README.md",
+      "demo": "modules/env-probes/demo.html",
+      "dependencies": "none",
+      "formats": "browser global, CommonJS (module.exports)"
+    },
+    {
+      "id": "fx-governor",
+      "global": "FxGovernor",
+      "summary": "Steps visual effects down when the device cannot keep up; never back up behind the player.",
+      "file": "modules/fx-governor/fx-governor.js",
+      "readme": "modules/fx-governor/README.md",
+      "demo": "modules/fx-governor/demo.html",
+      "dependencies": "none",
+      "formats": "browser global, CommonJS (module.exports)"
+    },
+    {
+      "id": "fly-to-mini",
+      "global": "FlyToMini",
+      "summary": "A big element scrolls away and a copy flies to its sticky mini version (and back).",
+      "file": "modules/fly-to-mini/fly-to-mini.js",
+      "readme": "modules/fly-to-mini/README.md",
+      "demo": "modules/fly-to-mini/demo.html",
+      "dependencies": "none",
+      "formats": "browser global, CommonJS (module.exports)"
+    },
+    {
+      "id": "sticker-text",
+      "global": "StickerText",
+      "summary": "Die-cut sticker lettering in plain CSS text-shadow rings, no images.",
+      "file": "modules/sticker-text/sticker-text.js",
+      "readme": "modules/sticker-text/README.md",
+      "demo": "modules/sticker-text/demo.html",
+      "dependencies": "none",
+      "formats": "browser global, CommonJS (module.exports)"
+    },
+    {
+      "id": "idle-core",
+      "global": "IdleCore",
+      "summary": "Tested maths for idle/clicker games: costs, milestones, away income, boost queue, number format.",
+      "file": "modules/idle-core/idle-core.js",
+      "readme": "modules/idle-core/README.md",
+      "demo": "modules/idle-core/demo.html",
+      "dependencies": "none",
+      "formats": "browser global, CommonJS (module.exports)"
+    },
+    {
+      "id": "cartoon-3d-kit",
+      "summary": "A written style guide plus demo for the soft, glossy cartoon 3D look done in plain CSS/SVG/canvas.",
+      "file": "modules/cartoon-3d-kit/STYLE-GUIDE.md",
+      "demo": "modules/cartoon-3d-kit/demo.html",
+      "dependencies": "none"
+    }
+  ],
+  "tools": [
+    {
+      "id": "fuzz-play",
+      "summary": "Random-play robot with invariants (Playwright), plus an in-page version for Firefox.",
+      "folder": "tools/fuzz-play",
+      "readme": "tools/fuzz-play/README.md"
+    },
+    {
+      "id": "marionette-lite",
+      "summary": "Drive Firefox from Python with the standard library only.",
+      "folder": "tools/marionette-lite",
+      "readme": "tools/marionette-lite/README.md"
+    },
+    {
+      "id": "single-file-tools",
+      "summary": "Font subsetting, safe inline-SVG tightening and a Zopfli self-extracting packer for one-file games.",
+      "folder": "tools/single-file-tools",
+      "readme": "tools/single-file-tools/README.md"
+    }
+  ]
+}

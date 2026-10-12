@@ -1,0 +1,24 @@
+# JS-modules
+> Small, dependency-free JavaScript modules and tools for single-file browser games, extracted from Apple Press. MIT License, Copyright (c) 2026 JNFoo.
+
+Each module is one file usable as a browser global or via require(). Start with modules.json (machine-readable index).
+
+## Modules
+- [stage-curtains](https://github.com/JNFoo/JS-modules/blob/main/modules/stage-curtains/README.md): Velvet stage curtains that slide shut over a page, then fly open. (global StageCurtains)
+- [save-kit](https://github.com/JNFoo/JS-modules/blob/main/modules/save-kit/README.md): Safe localStorage saves, backup slot, checksummed copy-paste save codes. (global SaveKit)
+- [hold-press](https://github.com/JNFoo/JS-modules/blob/main/modules/hold-press/README.md): Hold-to-repeat for buttons that survives Android Chrome pointercancel. (global HoldPress)
+- [env-probes](https://github.com/JNFoo/JS-modules/blob/main/modules/env-probes/README.md): Detects privacy modes that round timers, scramble canvas read-back or block storage. (global EnvProbes)
+- [fx-governor](https://github.com/JNFoo/JS-modules/blob/main/modules/fx-governor/README.md): Steps visual effects down when the device cannot keep up; never back up behind the player. (global FxGovernor)
+- [fly-to-mini](https://github.com/JNFoo/JS-modules/blob/main/modules/fly-to-mini/README.md): A big element scrolls away and a copy flies to its sticky mini version (and back). (global FlyToMini)
+- [sticker-text](https://github.com/JNFoo/JS-modules/blob/main/modules/sticker-text/README.md): Die-cut sticker lettering in plain CSS text-shadow rings, no images. (global StickerText)
+- [idle-core](https://github.com/JNFoo/JS-modules/blob/main/modules/idle-core/README.md): Tested maths for idle/clicker games: costs, milestones, away income, boost queue, number format. (global IdleCore)
+
+## Tools
+- [fuzz-play](https://github.com/JNFoo/JS-modules/blob/main/tools/fuzz-play/README.md): Random-play robot with invariants (Playwright), plus an in-page version for Firefox.
+- [marionette-lite](https://github.com/JNFoo/JS-modules/blob/main/tools/marionette-lite/README.md): Drive Firefox from Python with the standard library only.
+- [single-file-tools](https://github.com/JNFoo/JS-modules/blob/main/tools/single-file-tools/README.md): Font subsetting, safe inline-SVG tightening and a Zopfli self-extracting packer for one-file games.
+
+## Docs
+- [README](https://github.com/JNFoo/JS-modules/blob/main/README.md): overview and install
+- [AGENTS.md](https://github.com/JNFoo/JS-modules/blob/main/AGENTS.md): rules for AI assistants editing this repo
+- [modules.json](https://github.com/JNFoo/JS-modules/blob/main/modules.json): index with files, globals and demo paths

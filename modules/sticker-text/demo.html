@@ -1,0 +1,10 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>sticker-text demo</title>
+<link rel="stylesheet" href="sticker-text.css">
+<style>body{margin:0;padding:2rem;background:#cfe8f5;font-family:system-ui,sans-serif}.size{font-size:4rem}</style>
+<h1>sticker-text demo</h1>
+<div class="size"><span id="a">Bloop</span><br><span class="sticker-pill" style="font-size:.4em">Press</span></div>
+<p>Change <code>--st-fill</code> for another color:</p>
+<div class="size"><span id="b" style="--st-fill:linear-gradient(180deg,#fff3a0,#f2b705 55%,#8a5600);--st-edge:#5b3a00">Gold</span></div>
+<script src="sticker-text.js"></script>
+<script>StickerText.apply(document.getElementById('a')); StickerText.apply(document.getElementById('b'), { outline: '#fffdf2' });</script>

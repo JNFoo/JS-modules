@@ -1,0 +1,21 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>save-kit demo</title>
+<style>body{font:16px system-ui,sans-serif;max-width:40rem;margin:1rem auto;padding:0 1rem}textarea{width:100%;height:6rem}button{font:inherit;padding:.4rem .8rem;margin:.2rem .2rem .2rem 0}</style>
+<h1>save-kit demo</h1>
+<p>Score: <b id="score">0</b> <button id="add">+1</button> <button id="bad">Break the score (NaN)</button> <button id="reset">Reset (tap twice)</button></p>
+<p id="msg"></p>
+<p><button id="export">Make save code</button> <button id="import">Load code from the box</button></p>
+<textarea id="box" placeholder="Save code appears here. Paste a code and press Load."></textarea>
+<script src="save-kit.js"></script>
+<script>
+  var store = SaveKit.create({ key: 'save-kit-demo', prefix: 'DM1',
+    schema: { score: 'num', name: 'str:20', owned: 'counts' }, defaults: { score: 0, name: 'player', owned: {} } });
+  var state = store.load() || store.validate({});
+  function show() { score.textContent = state.score; }
+  add.onclick = function () { state.score++; show(); store.save(state); };
+  bad.onclick = function () { state.score = NaN; show(); msg.textContent = 'save() returned ' + store.save(state) + ' (a broken number is never written; reload to see the last good value)'; };
+  reset.onclick = SaveKit.twoTap(function () { state = store.validate({}); show(); store.save(state); msg.textContent = 'Reset.'; }, 3000, function () { reset.textContent = 'Tap again to erase'; }, function () { reset.textContent = 'Reset (tap twice)'; });
+  document.getElementById('export').onclick = function () { store.exportCode(state).then(function (c) { box.value = c; msg.textContent = 'Code made (' + c.length + ' characters).'; }); };
+  document.getElementById('import').onclick = function () { store.importCode(box.value).then(function (s) { state = s; show(); store.save(state); msg.textContent = 'Loaded!'; }, function (m) { msg.textContent = m; }); };
+  store.autosave(function () { return state; }); show();
+</script>

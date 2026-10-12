@@ -1,0 +1,23 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>stage-curtains demo</title>
+<style>
+  body{margin:0;font:16px system-ui,sans-serif;background:#cfe8f5;min-height:100vh}
+  #stage{position:fixed;inset:0;display:grid;place-items:center;text-align:center;color:#12384f}
+  #stage h1{margin:0 0 .5rem;font-size:2rem} .row{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;position:relative;z-index:2147483647}
+  button{font:inherit;padding:.5rem 1rem;border-radius:.5rem;border:1px solid #12384f;background:#fff}
+</style>
+<div id="stage"><div><h1 id="scene">Scene 1</h1><p id="msg">Pick a color, then Run.</p>
+  <div class="row"><input id="c" type="color" value="#b3202a"><button id="run">Run: close, change scene, open</button></div></div></div>
+<script src="stage-curtains.js"></script>
+<script>
+  var n = 1, busy = false, scenes = ['#cfe8f5', '#f5e6cf', '#d7f5cf', '#e6cff5'];
+  document.getElementById('run').onclick = function () {
+    if (busy) return; busy = true;
+    var cur = StageCurtains.create({ container: document.body, color: document.getElementById('c').value, seed: n * 7 });
+    msg.textContent = 'Painting the velvet in idle slices…';
+    cur.prepare().then(function () { msg.textContent = 'Closing…'; return cur.close(); }).then(function () {
+      n++; document.body.style.background = scenes[n % scenes.length]; scene.textContent = 'Scene ' + n; msg.textContent = 'Opening…';
+      return cur.open();
+    }).then(function () { msg.textContent = 'Done. Run again.'; cur.destroy(); busy = false; });
+  };
+</script>

@@ -1,0 +1,20 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>idle-core demo: a tiny clicker</title>
+<style>body{font:16px system-ui,sans-serif;max-width:32rem;margin:1rem auto;padding:0 1rem}button{font:inherit;padding:.5rem .9rem;margin:.2rem 0}.row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd}</style>
+<h1>idle-core demo</h1><p>Points: <b id="count">0</b> · per click <b id="pc">1</b> · per second <b id="ps">0</b></p>
+<button id="click">Click</button><div id="shop"></div><p id="boost"></p>
+<script src="idle-core.js"></script>
+<script>
+  var I = IdleCore, s = { count: 0, total: 0, owned: {} };
+  var ups = [{ name: 'Helper', base: 15, ps: 1, pc: 0 }, { name: 'Gloves', base: 60, ps: 0, pc: 1 }, { name: 'Farm', base: 500, ps: 10, pc: 0 }];
+  var book = I.RateBook(function () { var pc = 1, ps = 0; ups.forEach(function (u) { var o = s.owned[u.name] || 0, m = I.milestoneMult(o); pc += u.pc * o * m; ps += u.ps * o * m; }); return { pc: pc, ps: ps }; });
+  var boosts = I.BoostQueue({ x3: { secs: 20, max: 60 }, x5: { secs: 20, max: 60 } });
+  function draw() { var r = book.get(); count.textContent = I.formatBig(s.count); pc.textContent = I.formatRate(r.pc); ps.textContent = I.formatRate(r.ps);
+    shop.innerHTML = ''; ups.forEach(function (u) { var o = s.owned[u.name] || 0, c = I.upgradeCost(u.base, 15, o), row = document.createElement('div'), b = document.createElement('button');
+      row.className = 'row'; row.textContent = u.name + ' ×' + o + (I.milestoneLeft(o) ? ' (' + I.milestoneLeft(o) + ' more for ×' + I.milestoneMult(o) * 2 + ')' : ''); b.textContent = 'Buy ' + I.formatBig(c); b.disabled = s.count < c;
+      b.onclick = function () { s.count -= c; s.owned[u.name] = o + 1; book.invalidate(); draw(); }; row.appendChild(b); shop.appendChild(row); });
+    boost.textContent = boosts.active ? 'Boost ' + boosts.active + ': ' + Math.ceil(boosts.state.time[boosts.active]) + ' s' : ''; }
+  click.onclick = function () { var g = book.get().pc * (boosts.active === 'x5' ? 5 : boosts.active === 'x3' ? 3 : 1); s.count += g; s.total += g; draw(); };
+  var last = performance.now(); setInterval(function () { var now = performance.now(), dt = (now - last) / 1000; last = now; var e = book.get().ps * I.tickEarnings(dt, { percent: 50 }); s.count += e; s.total += e; boosts.tick(dt); draw(); }, 100);
+  draw();
+</script>

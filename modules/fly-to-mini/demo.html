@@ -1,0 +1,19 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>fly-to-mini demo</title>
+<style>
+  body{margin:0;font:16px system-ui,sans-serif;height:300vh;background:linear-gradient(#cfe8f5,#fff)}
+  #bar{position:sticky;top:0;height:56px;background:#fff;border-bottom:1px solid #ccc;display:flex;align-items:center;padding:0 12px;gap:12px;z-index:5}
+  #mini{width:40px;height:40px;border:0;background:none;padding:0;display:none}
+  #bar.mini-on #mini{display:block}
+  .ball{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 36% 30%,#ff9a7c,#e2342a 55%,#8f120d)}
+  #big{display:block;width:180px;height:180px;margin:120px auto;border:0;background:none;padding:0}
+  #big.flying .ball{opacity:0}
+  .landed{animation:pop .4s ease-out}@keyframes pop{40%{transform:scale(1.18)}}
+</style>
+<div id="bar"><b>Scroll down</b><button id="mini" aria-label="Press"><div class="ball"></div></button></div>
+<button id="big" aria-label="Press"><div class="ball"></div></button>
+<script src="fly-to-mini.js"></script>
+<script>
+  FlyToMini.create({ big: document.getElementById('big'), mini: document.getElementById('mini'), topInset: 56,
+    onChange: function (on) { document.getElementById('bar').classList.toggle('mini-on', on); } });
+</script>

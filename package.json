@@ -1,0 +1,27 @@
+{
+  "name": "js-modules",
+  "version": "1.0.0",
+  "description": "Small, dependency-free pieces for single-file browser games, extracted from Apple Press.",
+  "license": "MIT",
+  "author": "JNFoo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JNFoo/JS-modules.git"
+  },
+  "homepage": "https://jnfoo.github.io/JS-modules/",
+  "scripts": {
+    "test": "node tests/run.js"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.48.0"
+  },
+  "keywords": [
+    "game",
+    "clicker",
+    "idle",
+    "canvas",
+    "localStorage",
+    "web-animations",
+    "single-file"
+  ]
+}
