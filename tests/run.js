@@ -82,7 +82,9 @@ async function t(name, fn) { try { await fn(); pass++; console.log('  ok   ' + n
   console.log('browser modules (Chromium)');
   let chromium;
   try { chromium = require('playwright-core').chromium; } catch (e) { console.error('\nplaywright-core is not installed. Run:  npm install   (then re-run; set CHROMIUM=/path/to/chrome if Playwright cannot find a browser).\nThe tests for frame-kit, sprite-baker, lzma-decode and fuzz-kit need no npm packages:  npm run test:kits'); process.exit(2); }
-  const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
+  let browser;
+  try { browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {}); }
+  catch (e) { console.error('\nNo browser found for Playwright. Either run:  npx playwright-core install chromium\nor point to one you already have:  CHROMIUM=/path/to/chrome node tests/run.js\n(' + pass + ' Node checks passed, ' + fail + ' failed; the browser checks were skipped.)'); process.exit(2); }
   const open = async (m, w = 412, h = 800) => { const ctx = await browser.newContext({ viewport: { width: w, height: h } }), p = await ctx.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message)); await p.goto('file://' + M(m, 'demo.html')); await p.waitForTimeout(300); return p; };
 
   await t('every demo page loads without errors', async () => {
