@@ -8,31 +8,141 @@ Live demos: **https://jnfoo.github.io/JS-modules/**
 
 ## Pick a piece
 
+Grouped by what a piece does. The live page, with demos and a quick finder, is **https://jnfoo.github.io/JS-modules/**.
+
+### Games
+
+#### Saving and data safety
+
+Keep a player's progress safe and let them move it between devices.
+
+| Module | One line | Global |
+|---|---|---|
+| [save-kit](modules/save-kit/README.md) | Safe localStorage saves, backup slot, checksummed copy-paste save codes. | `SaveKit` |
+
+#### Device and browser adaptation
+
+Make a game behave on slow phones, privacy-focused browsers and power-saving screens.
+
+| Module | One line | Global |
+|---|---|---|
+| [env-probes](modules/env-probes/README.md) | Detects privacy modes that round timers, scramble canvas read-back or block storage. | `EnvProbes` |
+| [fx-governor](modules/fx-governor/README.md) | Steps visual effects down when the device cannot keep up; never back up behind the player. | `FxGovernor` |
+| [frame-kit](modules/frame-kit/README.md) | Frame pacing for canvas games: even-dt smooths the frame time, quality-governor steps effects down and back up, job-pump spreads heavy jobs across frames. | `EvenDt`, `QualityGovernor`, `JobPump` |
+
+#### Controls
+
+Let players hold a button, or play with a gamepad.
+
+| Module | One line | Global |
+|---|---|---|
+| [hold-press](modules/hold-press/README.md) | Hold-to-repeat for buttons that survives Android Chrome pointercancel. | `HoldPress` |
+| [pad-nav](modules/pad-nav/README.md) | Gamepad API to DOM focus: move through buttons and menus with a controller, no game code. | `PadNav` |
+
+#### Looks and effects
+
+Curtains, flying elements, lettering and 3D-looking sprites, plus a written style guide.
+
 | Module | One line | Global |
 |---|---|---|
 | [stage-curtains](modules/stage-curtains/README.md) | Velvet stage curtains that slide shut over a page, then fly open. | `StageCurtains` |
-| [save-kit](modules/save-kit/README.md) | Safe localStorage saves, backup slot, checksummed copy-paste save codes. | `SaveKit` |
-| [hold-press](modules/hold-press/README.md) | Hold-to-repeat for buttons that survives Android Chrome pointercancel. | `HoldPress` |
-| [env-probes](modules/env-probes/README.md) | Detects privacy modes that round timers, scramble canvas read-back or block storage. | `EnvProbes` |
-| [fx-governor](modules/fx-governor/README.md) | Steps visual effects down when the device cannot keep up; never back up behind the player. | `FxGovernor` |
 | [fly-to-mini](modules/fly-to-mini/README.md) | A big element scrolls away and a copy flies to its sticky mini version (and back). | `FlyToMini` |
 | [sticker-text](modules/sticker-text/README.md) | Die-cut sticker lettering in plain CSS text-shadow rings, no images. | `StickerText` |
-| [idle-core](modules/idle-core/README.md) | Tested maths for idle/clicker games: costs, milestones, away income, boost queue, number format. | `IdleCore` |
-| [frame-kit](modules/frame-kit/README.md) | Frame pacing for canvas games: even frame time, effect quality that steps down and back up, heavy jobs spread across frames. | `EvenDt`, `QualityGovernor`, `JobPump` |
 | [sprite-baker](modules/sprite-baker/README.md) | Tiny software 3D rasterizer that bakes shaded sprites to canvases once at load. | `SpriteBaker` |
-| [pad-nav](modules/pad-nav/README.md) | Gamepad API to DOM focus: drive buttons and menus with a controller. | `PadNav` |
-| [lzma-decode](modules/lzma-decode/README.md) | Small readable LZMA1 decoder, tested against Python's lzma. | `lzmaDecode` |
-| [cartoon-3d-kit](modules/cartoon-3d-kit/STYLE-GUIDE.md) | A written style guide and demo for a soft, glossy cartoon 3D look in plain CSS, SVG and canvas | none |
+| [cartoon-3d-kit](modules/cartoon-3d-kit/STYLE-GUIDE.md) | A written style guide plus demo for the soft, glossy cartoon 3D look done in plain CSS/SVG/canvas. | none |
 
-Tools for building and testing (not shipped inside a game):
+#### Game math
+
+The numbers behind idle and clicker games.
+
+| Module | One line | Global |
+|---|---|---|
+| [idle-core](modules/idle-core/README.md) | Tested maths for idle/clicker games: costs, milestones, away income, boost queue, number format. | `IdleCore` |
+
+#### Size and packaging
+
+Unpack a smaller file inside the game. The tools that pack it are under Tools.
+
+| Module | One line | Global |
+|---|---|---|
+| [lzma-decode](modules/lzma-decode/README.md) | Small readable LZMA1 decoder (ES5), tested against Python's lzma. Browsers can only unpack gzip and deflate natively. | `lzmaDecode` |
+
+### Story editor
+
+Packages for interactive stories. They live with the [Story Editor](https://github.com/JNFoo/p-see-story-editor) they are generated from, under `packages/`.
+
+#### Story data
+
+Create, clean and save stories in one shared file format.
+
+| Package | One line |
+|---|---|
+| [story-format](https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-format/README.md) | Create, clean, import and export interactive stories as JSON, with a JSON Schema. |
+
+#### Checking
+
+Find dead ends and endings nobody can reach before a reader does.
+
+| Package | One line |
+|---|---|
+| [story-check](https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-check/README.md) | Exact checker for branching stories with items, numbers and dice: dead ends and endings no player can reach. |
+
+#### Drawing
+
+See a story's shape: maps of its pages and simulated readers.
+
+| Package | One line |
+|---|---|
+| [story-map](https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-map/README.md) | Layered, arc and matrix drawings of a story graph (SVG) and seeded simulated players. |
+
+#### Playing and building
+
+Turn a story into a game, or play it from code or a terminal.
+
+| Package | One line |
+|---|---|
+| [story-player](https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-player/README.md) | Build one offline HTML game from a story, or play a story from code or a terminal. |
+
+### Tools
+
+For building and testing. Not shipped inside a game or story.
+
+#### For games
+
+**Size and packaging.** Pack a finished one-file game into a smaller file.
+
+| Tool | One line |
+|---|---|
+| [lzma-pack](tools/lzma-pack/README.md) | Packs one HTML file into a smaller self-unpacking file with LZMA and a hash check (Python 3 standard library). |
+| [single-file-tools](tools/single-file-tools/README.md) | Font subsetting, safe inline-SVG tightening and a Zopfli self-extracting packer for one-file games. |
+
+**Testing.** Test a game by playing it at random, or by driving Firefox from a script.
 
 | Tool | One line |
 |---|---|
 | [fuzz-play](tools/fuzz-play/README.md) | Random-play robot with invariants (Playwright), plus an in-page version for Firefox. |
+| [fuzz-kit](tools/fuzz-kit/README.md) | Seeded, reproducible random-input fuzzer engine with weighted operations, invariants and liveness checks; Playwright and Puppeteer runners; test-hook stripper. |
 | [marionette-lite](tools/marionette-lite/README.md) | Drive Firefox from Python with the standard library only. |
-| [single-file-tools](tools/single-file-tools/README.md) | Font subsetting, safe inline-SVG tightening and a Zopfli self-extracting packer for one-file games. |
-| [lzma-pack](tools/lzma-pack/README.md) | Packs one HTML file into a smaller self-unpacking file with LZMA and a hash check. |
-| [fuzz-kit](tools/fuzz-kit/README.md) | Seeded random-input fuzzer engine with invariants and liveness checks, Playwright and Puppeteer runners. |
+
+#### For the story editor
+
+**Size and packaging.** Pack a finished story page into a smaller page.
+
+| Package | One line |
+|---|---|
+| [zip-page](https://github.com/JNFoo/p-see-story-editor/blob/main/packages/zip-page/README.md) | Wrap a finished HTML page into a smaller page that unzips itself, with a pure-JS inflater fallback. |
+
+**Testing.** Run tests on stock Firefox and generate random stories.
+
+| Package | One line |
+|---|---|
+| [qa-kit](https://github.com/JNFoo/p-see-story-editor/blob/main/packages/qa-kit/README.md) | Tiered test runner and a Playwright-style API over WebDriver BiDi for stock Firefox; seeded random-story generator. |
+
+**Working with an AI helper.** A written process for a person and an AI assistant building software together.
+
+| Package | One line |
+|---|---|
+| [ai-collab-kit](https://github.com/JNFoo/p-see-story-editor/blob/main/packages/ai-collab-kit/README.md) | A written process and templates for a person and an AI assistant building software together. |
 
 ## How to use a module
 

@@ -3,34 +3,61 @@
 
 Each module is one file usable as a browser global or via require(). Start with modules.json (machine-readable index).
 
-## Modules
-- [stage-curtains](https://github.com/JNFoo/JS-modules/blob/main/modules/stage-curtains/README.md): Velvet stage curtains that slide shut over a page, then fly open. (global StageCurtains)
+Grouped by what each piece does: Games, Story editor, Tools. Every entry in modules.json also carries `side` and `category`.
+
+## Games: Saving and data safety
 - [save-kit](https://github.com/JNFoo/JS-modules/blob/main/modules/save-kit/README.md): Safe localStorage saves, backup slot, checksummed copy-paste save codes. (global SaveKit)
-- [hold-press](https://github.com/JNFoo/JS-modules/blob/main/modules/hold-press/README.md): Hold-to-repeat for buttons that survives Android Chrome pointercancel. (global HoldPress)
+
+## Games: Device and browser adaptation
 - [env-probes](https://github.com/JNFoo/JS-modules/blob/main/modules/env-probes/README.md): Detects privacy modes that round timers, scramble canvas read-back or block storage. (global EnvProbes)
 - [fx-governor](https://github.com/JNFoo/JS-modules/blob/main/modules/fx-governor/README.md): Steps visual effects down when the device cannot keep up; never back up behind the player. (global FxGovernor)
+- [frame-kit](https://github.com/JNFoo/JS-modules/blob/main/modules/frame-kit/README.md): Frame pacing for canvas games: even-dt smooths the frame time, quality-governor steps effects down and back up, job-pump spreads heavy jobs across frames. (global EvenDt, QualityGovernor, JobPump)
+
+## Games: Controls
+- [hold-press](https://github.com/JNFoo/JS-modules/blob/main/modules/hold-press/README.md): Hold-to-repeat for buttons that survives Android Chrome pointercancel. (global HoldPress)
+- [pad-nav](https://github.com/JNFoo/JS-modules/blob/main/modules/pad-nav/README.md): Gamepad API to DOM focus: move through buttons and menus with a controller, no game code. (global PadNav)
+
+## Games: Looks and effects
+- [stage-curtains](https://github.com/JNFoo/JS-modules/blob/main/modules/stage-curtains/README.md): Velvet stage curtains that slide shut over a page, then fly open. (global StageCurtains)
 - [fly-to-mini](https://github.com/JNFoo/JS-modules/blob/main/modules/fly-to-mini/README.md): A big element scrolls away and a copy flies to its sticky mini version (and back). (global FlyToMini)
 - [sticker-text](https://github.com/JNFoo/JS-modules/blob/main/modules/sticker-text/README.md): Die-cut sticker lettering in plain CSS text-shadow rings, no images. (global StickerText)
-- [idle-core](https://github.com/JNFoo/JS-modules/blob/main/modules/idle-core/README.md): Tested maths for idle/clicker games: costs, milestones, away income, boost queue, number format. (global IdleCore)
-- [frame-kit](https://github.com/JNFoo/JS-modules/blob/main/modules/frame-kit/README.md): Frame pacing for canvas games: even-dt smooths the frame time, quality-governor steps effects down and back up, job-pump spreads heavy jobs across frames. (global EvenDt, QualityGovernor, JobPump)
 - [sprite-baker](https://github.com/JNFoo/JS-modules/blob/main/modules/sprite-baker/README.md): Tiny software 3D rasterizer that bakes shaded sprites to canvases once at load. (global SpriteBaker)
-- [pad-nav](https://github.com/JNFoo/JS-modules/blob/main/modules/pad-nav/README.md): Gamepad API to DOM focus: move through buttons and menus with a controller, no game code. (global PadNav)
+- [cartoon-3d-kit](https://github.com/JNFoo/JS-modules/blob/main/modules/cartoon-3d-kit/STYLE-GUIDE.md): A written style guide plus demo for the soft, glossy cartoon 3D look done in plain CSS/SVG/canvas.
+
+## Games: Game math
+- [idle-core](https://github.com/JNFoo/JS-modules/blob/main/modules/idle-core/README.md): Tested maths for idle/clicker games: costs, milestones, away income, boost queue, number format. (global IdleCore)
+
+## Games: Size and packaging
 - [lzma-decode](https://github.com/JNFoo/JS-modules/blob/main/modules/lzma-decode/README.md): Small readable LZMA1 decoder (ES5), tested against Python's lzma. Browsers can only unpack gzip and deflate natively. (global lzmaDecode)
 
-## Tools
-- [fuzz-play](https://github.com/JNFoo/JS-modules/blob/main/tools/fuzz-play/README.md): Random-play robot with invariants (Playwright), plus an in-page version for Firefox.
-- [marionette-lite](https://github.com/JNFoo/JS-modules/blob/main/tools/marionette-lite/README.md): Drive Firefox from Python with the standard library only.
-- [single-file-tools](https://github.com/JNFoo/JS-modules/blob/main/tools/single-file-tools/README.md): Font subsetting, safe inline-SVG tightening and a Zopfli self-extracting packer for one-file games.
-- [lzma-pack](https://github.com/JNFoo/JS-modules/blob/main/tools/lzma-pack/README.md): Packs one HTML file into a smaller self-unpacking file with LZMA and a hash check (Python 3 standard library).
-- [fuzz-kit](https://github.com/JNFoo/JS-modules/blob/main/tools/fuzz-kit/README.md): Seeded, reproducible random-input fuzzer engine with weighted operations, invariants and liveness checks; Playwright and Puppeteer runners; test-hook stripper.
-
-## Story tools (in https://github.com/JNFoo/p-see-story-editor, generated from the Story Editor's sources)
+## Story editor: Story data (in https://github.com/JNFoo/p-see-story-editor, generated from the Story Editor's sources)
 - [story-format](https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-format/README.md): Create, clean, import and export interactive stories as JSON, with a JSON Schema.
+
+## Story editor: Checking (in https://github.com/JNFoo/p-see-story-editor, generated from the Story Editor's sources)
 - [story-check](https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-check/README.md): Exact checker for branching stories with items, numbers and dice: dead ends and endings no player can reach.
-- [story-player](https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-player/README.md): Build one offline HTML game from a story, or play a story from code or a terminal.
+
+## Story editor: Drawing (in https://github.com/JNFoo/p-see-story-editor, generated from the Story Editor's sources)
 - [story-map](https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-map/README.md): Layered, arc and matrix drawings of a story graph (SVG) and seeded simulated players.
+
+## Story editor: Playing and building (in https://github.com/JNFoo/p-see-story-editor, generated from the Story Editor's sources)
+- [story-player](https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-player/README.md): Build one offline HTML game from a story, or play a story from code or a terminal.
+
+## Tools for games: Size and packaging
+- [lzma-pack](https://github.com/JNFoo/JS-modules/blob/main/tools/lzma-pack/README.md): Packs one HTML file into a smaller self-unpacking file with LZMA and a hash check (Python 3 standard library).
+- [single-file-tools](https://github.com/JNFoo/JS-modules/blob/main/tools/single-file-tools/README.md): Font subsetting, safe inline-SVG tightening and a Zopfli self-extracting packer for one-file games.
+
+## Tools for games: Testing
+- [fuzz-play](https://github.com/JNFoo/JS-modules/blob/main/tools/fuzz-play/README.md): Random-play robot with invariants (Playwright), plus an in-page version for Firefox.
+- [fuzz-kit](https://github.com/JNFoo/JS-modules/blob/main/tools/fuzz-kit/README.md): Seeded, reproducible random-input fuzzer engine with weighted operations, invariants and liveness checks; Playwright and Puppeteer runners; test-hook stripper.
+- [marionette-lite](https://github.com/JNFoo/JS-modules/blob/main/tools/marionette-lite/README.md): Drive Firefox from Python with the standard library only.
+
+## Tools for the story editor: Size and packaging
 - [zip-page](https://github.com/JNFoo/p-see-story-editor/blob/main/packages/zip-page/README.md): Wrap a finished HTML page into a smaller page that unzips itself, with a pure-JS inflater fallback.
+
+## Tools for the story editor: Testing
 - [qa-kit](https://github.com/JNFoo/p-see-story-editor/blob/main/packages/qa-kit/README.md): Tiered test runner and a Playwright-style API over WebDriver BiDi for stock Firefox; seeded random-story generator.
+
+## Tools for the story editor: Working with an AI helper
 - [ai-collab-kit](https://github.com/JNFoo/p-see-story-editor/blob/main/packages/ai-collab-kit/README.md): A written process and templates for a person and an AI assistant building software together.
 
 ## Docs

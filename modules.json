@@ -14,7 +14,9 @@
       "readme": "modules/stage-curtains/README.md",
       "demo": "modules/stage-curtains/demo.html",
       "dependencies": "none",
-      "formats": "browser global, CommonJS (module.exports)"
+      "formats": "browser global, CommonJS (module.exports)",
+      "side": "games",
+      "category": "looks"
     },
     {
       "id": "save-kit",
@@ -24,7 +26,9 @@
       "readme": "modules/save-kit/README.md",
       "demo": "modules/save-kit/demo.html",
       "dependencies": "none",
-      "formats": "browser global, CommonJS (module.exports)"
+      "formats": "browser global, CommonJS (module.exports)",
+      "side": "games",
+      "category": "saving"
     },
     {
       "id": "hold-press",
@@ -34,7 +38,9 @@
       "readme": "modules/hold-press/README.md",
       "demo": "modules/hold-press/demo.html",
       "dependencies": "none",
-      "formats": "browser global, CommonJS (module.exports)"
+      "formats": "browser global, CommonJS (module.exports)",
+      "side": "games",
+      "category": "controls"
     },
     {
       "id": "env-probes",
@@ -44,7 +50,9 @@
       "readme": "modules/env-probes/README.md",
       "demo": "modules/env-probes/demo.html",
       "dependencies": "none",
-      "formats": "browser global, CommonJS (module.exports)"
+      "formats": "browser global, CommonJS (module.exports)",
+      "side": "games",
+      "category": "adaptation"
     },
     {
       "id": "fx-governor",
@@ -54,7 +62,9 @@
       "readme": "modules/fx-governor/README.md",
       "demo": "modules/fx-governor/demo.html",
       "dependencies": "none",
-      "formats": "browser global, CommonJS (module.exports)"
+      "formats": "browser global, CommonJS (module.exports)",
+      "side": "games",
+      "category": "adaptation"
     },
     {
       "id": "fly-to-mini",
@@ -64,7 +74,9 @@
       "readme": "modules/fly-to-mini/README.md",
       "demo": "modules/fly-to-mini/demo.html",
       "dependencies": "none",
-      "formats": "browser global, CommonJS (module.exports)"
+      "formats": "browser global, CommonJS (module.exports)",
+      "side": "games",
+      "category": "looks"
     },
     {
       "id": "sticker-text",
@@ -74,7 +86,9 @@
       "readme": "modules/sticker-text/README.md",
       "demo": "modules/sticker-text/demo.html",
       "dependencies": "none",
-      "formats": "browser global, CommonJS (module.exports)"
+      "formats": "browser global, CommonJS (module.exports)",
+      "side": "games",
+      "category": "looks"
     },
     {
       "id": "idle-core",
@@ -84,7 +98,9 @@
       "readme": "modules/idle-core/README.md",
       "demo": "modules/idle-core/demo.html",
       "dependencies": "none",
-      "formats": "browser global, CommonJS (module.exports)"
+      "formats": "browser global, CommonJS (module.exports)",
+      "side": "games",
+      "category": "math"
     },
     {
       "id": "frame-kit",
@@ -99,7 +115,9 @@
         "even-dt.js",
         "quality-governor.js",
         "job-pump.js"
-      ]
+      ],
+      "side": "games",
+      "category": "adaptation"
     },
     {
       "id": "sprite-baker",
@@ -109,7 +127,9 @@
       "readme": "modules/sprite-baker/README.md",
       "demo": "modules/sprite-baker/demo.html",
       "dependencies": "none",
-      "formats": "browser global, CommonJS (module.exports)"
+      "formats": "browser global, CommonJS (module.exports)",
+      "side": "games",
+      "category": "looks"
     },
     {
       "id": "pad-nav",
@@ -119,7 +139,9 @@
       "readme": "modules/pad-nav/README.md",
       "demo": "modules/pad-nav/demo.html",
       "dependencies": "none",
-      "formats": "browser global, CommonJS (module.exports)"
+      "formats": "browser global, CommonJS (module.exports)",
+      "side": "games",
+      "category": "controls"
     },
     {
       "id": "lzma-decode",
@@ -129,14 +151,18 @@
       "readme": "modules/lzma-decode/README.md",
       "demo": "tools/lzma-pack/example/packed-base64.html",
       "dependencies": "none",
-      "formats": "browser global, CommonJS (module.exports)"
+      "formats": "browser global, CommonJS (module.exports)",
+      "side": "games",
+      "category": "size"
     },
     {
       "id": "cartoon-3d-kit",
       "summary": "A written style guide plus demo for the soft, glossy cartoon 3D look done in plain CSS/SVG/canvas.",
       "file": "modules/cartoon-3d-kit/STYLE-GUIDE.md",
       "demo": "modules/cartoon-3d-kit/demo.html",
-      "dependencies": "none"
+      "dependencies": "none",
+      "side": "games",
+      "category": "looks"
     }
   ],
   "tools": [
@@ -144,31 +170,41 @@
       "id": "fuzz-play",
       "summary": "Random-play robot with invariants (Playwright), plus an in-page version for Firefox.",
       "folder": "tools/fuzz-play",
-      "readme": "tools/fuzz-play/README.md"
+      "readme": "tools/fuzz-play/README.md",
+      "side": "games",
+      "category": "testing"
     },
     {
       "id": "marionette-lite",
       "summary": "Drive Firefox from Python with the standard library only.",
       "folder": "tools/marionette-lite",
-      "readme": "tools/marionette-lite/README.md"
+      "readme": "tools/marionette-lite/README.md",
+      "side": "games",
+      "category": "testing"
     },
     {
       "id": "single-file-tools",
       "summary": "Font subsetting, safe inline-SVG tightening and a Zopfli self-extracting packer for one-file games.",
       "folder": "tools/single-file-tools",
-      "readme": "tools/single-file-tools/README.md"
+      "readme": "tools/single-file-tools/README.md",
+      "side": "games",
+      "category": "size"
     },
     {
       "id": "lzma-pack",
       "summary": "Packs one HTML file into a smaller self-unpacking file with LZMA and a hash check (Python 3 standard library).",
       "folder": "tools/lzma-pack",
-      "readme": "tools/lzma-pack/README.md"
+      "readme": "tools/lzma-pack/README.md",
+      "side": "games",
+      "category": "size"
     },
     {
       "id": "fuzz-kit",
       "summary": "Seeded, reproducible random-input fuzzer engine with weighted operations, invariants and liveness checks; Playwright and Puppeteer runners; test-hook stripper.",
       "folder": "tools/fuzz-kit",
-      "readme": "tools/fuzz-kit/README.md"
+      "readme": "tools/fuzz-kit/README.md",
+      "side": "games",
+      "category": "testing"
     }
   ],
   "related": {
@@ -179,38 +215,141 @@
       {
         "id": "story-format",
         "summary": "Create, clean, import and export interactive stories as JSON, with a JSON Schema.",
-        "readme": "https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-format/README.md"
+        "readme": "https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-format/README.md",
+        "side": "stories",
+        "category": "data"
       },
       {
         "id": "story-check",
         "summary": "Exact checker for branching stories with items, numbers and dice: dead ends and endings no player can reach.",
-        "readme": "https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-check/README.md"
+        "readme": "https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-check/README.md",
+        "side": "stories",
+        "category": "checking"
       },
       {
         "id": "story-player",
         "summary": "Build one offline HTML game from a story, or play a story from code or a terminal.",
-        "readme": "https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-player/README.md"
+        "readme": "https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-player/README.md",
+        "side": "stories",
+        "category": "playing"
       },
       {
         "id": "story-map",
         "summary": "Layered, arc and matrix drawings of a story graph (SVG) and seeded simulated players.",
-        "readme": "https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-map/README.md"
+        "readme": "https://github.com/JNFoo/p-see-story-editor/blob/main/packages/story-map/README.md",
+        "side": "stories",
+        "category": "drawing"
       },
       {
         "id": "zip-page",
         "summary": "Wrap a finished HTML page into a smaller page that unzips itself, with a pure-JS inflater fallback.",
-        "readme": "https://github.com/JNFoo/p-see-story-editor/blob/main/packages/zip-page/README.md"
+        "readme": "https://github.com/JNFoo/p-see-story-editor/blob/main/packages/zip-page/README.md",
+        "side": "stories",
+        "category": "size"
       },
       {
         "id": "qa-kit",
         "summary": "Tiered test runner and a Playwright-style API over WebDriver BiDi for stock Firefox; seeded random-story generator.",
-        "readme": "https://github.com/JNFoo/p-see-story-editor/blob/main/packages/qa-kit/README.md"
+        "readme": "https://github.com/JNFoo/p-see-story-editor/blob/main/packages/qa-kit/README.md",
+        "side": "stories",
+        "category": "testing"
       },
       {
         "id": "ai-collab-kit",
         "summary": "A written process and templates for a person and an AI assistant building software together.",
-        "readme": "https://github.com/JNFoo/p-see-story-editor/blob/main/packages/ai-collab-kit/README.md"
+        "readme": "https://github.com/JNFoo/p-see-story-editor/blob/main/packages/ai-collab-kit/README.md",
+        "side": "stories",
+        "category": "ai-helper"
       }
     ]
+  },
+  "categories": {
+    "games": {
+      "modules": [
+        {
+          "id": "saving",
+          "title": "Saving and data safety",
+          "use": "Keep a player's progress safe and let them move it between devices."
+        },
+        {
+          "id": "adaptation",
+          "title": "Device and browser adaptation",
+          "use": "Make a game behave on slow phones, privacy-focused browsers and power-saving screens."
+        },
+        {
+          "id": "controls",
+          "title": "Controls",
+          "use": "Let players hold a button, or play with a gamepad."
+        },
+        {
+          "id": "looks",
+          "title": "Looks and effects",
+          "use": "Curtains, flying elements, lettering and 3D-looking sprites, plus a written style guide."
+        },
+        {
+          "id": "math",
+          "title": "Game math",
+          "use": "The numbers behind idle and clicker games."
+        },
+        {
+          "id": "size",
+          "title": "Size and packaging",
+          "use": "Unpack a smaller file inside the game. The tools that pack it are under Tools."
+        }
+      ],
+      "tools": [
+        {
+          "id": "size",
+          "title": "Size and packaging",
+          "use": "Pack a finished one-file game into a smaller file."
+        },
+        {
+          "id": "testing",
+          "title": "Testing",
+          "use": "Test a game by playing it at random, or by driving Firefox from a script."
+        }
+      ]
+    },
+    "stories": {
+      "packages": [
+        {
+          "id": "data",
+          "title": "Story data",
+          "use": "Create, clean and save stories in one shared file format."
+        },
+        {
+          "id": "checking",
+          "title": "Checking",
+          "use": "Find dead ends and endings nobody can reach before a reader does."
+        },
+        {
+          "id": "drawing",
+          "title": "Drawing",
+          "use": "See a story's shape: maps of its pages and simulated readers."
+        },
+        {
+          "id": "playing",
+          "title": "Playing and building",
+          "use": "Turn a story into a game, or play it from code or a terminal."
+        }
+      ],
+      "tools": [
+        {
+          "id": "size",
+          "title": "Size and packaging",
+          "use": "Pack a finished story page into a smaller page."
+        },
+        {
+          "id": "testing",
+          "title": "Testing",
+          "use": "Run tests on stock Firefox and generate random stories."
+        },
+        {
+          "id": "ai-helper",
+          "title": "Working with an AI helper",
+          "use": "A written process for a person and an AI assistant building software together."
+        }
+      ]
+    }
   }
 }
