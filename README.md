@@ -70,5 +70,6 @@ npm run test:kits                               # frame-kit, sprite-baker, pad-n
 ## More from JNFoo
 
 - [Apple Press](https://github.com/JNFoo/apple-press): a clicker game for kids ([play](https://jnfoo.github.io/apple-press/))
+- [Story Editor](https://github.com/JNFoo/p-see-story-editor): an offline editor for branching stories, plus MIT packages cut from it: story format and checker, game builder and player, story map layout, a self-unzipping page packer, and a Firefox test kit ([try it](https://jnfoo.github.io/p-see-story-editor/))
 - [Fancy Banana](https://github.com/JNFoo/fancy-banana): a one-tap flying-banana arcade game ([play](https://jnfoo.github.io/fancy-banana/))
 - [JS-modules](https://github.com/JNFoo/JS-modules): this repository ([demos](https://jnfoo.github.io/JS-modules/))
