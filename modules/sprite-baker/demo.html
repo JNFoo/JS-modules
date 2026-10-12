@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>sprite-baker example</title>
+<style>
+  body { margin: 0; padding: 24px 16px; background: #1d2230; color: #dfe5f2; font: 15px/1.45 system-ui, sans-serif; }
+  main { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p { margin: 0 0 16px; color: #9fa9c0; }
+  .row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+  figure { margin: 0; background: #2a3145; border-radius: 10px; padding: 12px; }
+  figcaption { font-size: 13px; color: #9fa9c0; margin-top: 6px; }
+  canvas { display: block; image-rendering: pixelated; background: #343c55; border-radius: 6px; }
+  #strip { display: flex; gap: 2px; flex-wrap: wrap; }
+  #status { font-size: 13px; color: #9fa9c0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>sprite-baker</h1>
+  <p>Shapes shaded by a tiny software rasterizer, baked once into frames, then played back with plain <code>drawImage</code>.</p>
+  <div class="row">
+    <figure><canvas id="a" width="160" height="96"></canvas><figcaption>capsule with 5 ridges, 16 baked frames</figcaption></figure>
+    <figure><canvas id="b" width="96" height="96"></canvas><figcaption>torus and bead, 12 baked frames</figcaption></figure>
+  </div>
+  <figure><div id="strip"></div><figcaption>the 16 capsule frames, one full turn</figcaption></figure>
+  <p id="status">baking...</p>
+</main>
+
+<script src="sprite-baker.js"></script>
+<script>
+(function () {
+  var SB = window.SpriteBaker, t0 = performance.now();
+
+  var capsuleMat = SB.material([[0, 20, 70, 100], [0.5, 60, 170, 190], [1, 190, 250, 245]]);
+  var capsule = [{ fn: SB.capsule([-26, 0, 0], [26, 0, 0], 13, { lobes: 5, depth: 0.1 }), nu: 44, nv: 30, material: capsuleMat }];
+  var capsuleFrames = SB.bakeRoll(capsule, 16, [160, 96], { ss: 2, outline: { radius: 2, color: [14, 24, 40] } });
+
+  var ringMat = SB.material([[0, 120, 50, 20], [0.5, 235, 150, 50], [1, 255, 235, 170]]);
+  var beadMat = SB.material([[0, 60, 20, 90], [0.5, 170, 90, 210], [1, 245, 210, 255]]);
+  var ring = [
+    { fn: SB.torus(26, 9), nu: 48, nv: 16, material: ringMat },
+    { fn: SB.sphere(11, [0, -26, 0]), nu: 12, nv: 18, material: beadMat }
+  ];
+  var ringFrames = SB.bakeRoll(ring, 12, 96, { ss: 2, outline: { radius: 2, color: [14, 24, 40] } });
+
+  var bakeMs = performance.now() - t0;
+  var capsuleCanvases = capsuleFrames.map(SB.toCanvas), ringCanvases = ringFrames.map(SB.toCanvas);
+
+  var strip = document.getElementById('strip');
+  capsuleCanvases.forEach(function (c) { c.style.width = '72px'; c.style.height = '43px'; strip.appendChild(c); });
+
+  var a = document.getElementById('a').getContext('2d'), b = document.getElementById('b').getContext('2d');
+  function frame(now) {
+    var i = Math.floor(now / 90) % capsuleCanvases.length, j = Math.floor(now / 110) % ringCanvases.length;
+    a.clearRect(0, 0, 160, 96); a.drawImage(capsuleCanvases[i], 0, 0);
+    b.clearRect(0, 0, 96, 96); b.drawImage(ringCanvases[j], 0, 0);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  frame(0);
+  document.getElementById('status').textContent = 'baked ' + (capsuleFrames.length + ringFrames.length) + ' frames in ' + bakeMs.toFixed(0) + ' ms';
+})();
+</script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 {
   "name": "js-modules",
   "version": "1.0.0",
-  "description": "Small, dependency-free pieces for single-file browser games, extracted from Apple Press.",
+  "description": "Small, dependency-free pieces for single-file browser games, extracted from Apple Press and Fancy, the Banana.",
   "license": "MIT",
   "author": "JNFoo",
   "repository": {
@@ -10,7 +10,8 @@
   },
   "homepage": "https://jnfoo.github.io/JS-modules/",
   "scripts": {
-    "test": "node tests/run.js"
+    "test": "node tests/run.js",
+    "test:kits": "node tests/kits.js"
   },
   "devDependencies": {
     "playwright-core": "^1.48.0"

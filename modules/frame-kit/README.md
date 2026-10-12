@@ -1,0 +1,208 @@
+# frame-kit
+
+Test everything (Node only, offline, about a second): `node modules/frame-kit/test/run.js` (run from the repository root; it exits non-zero on any failure).
+Browser check of the example (Playwright for Python, Chromium already installed): `python3 modules/frame-kit/test/check-example.py`.
+
+## What it is
+
+Three tiny, independent helpers for browser games and other `requestAnimationFrame` loops. Each is one file with no dependencies; use any one without the others.
+
+| Helper | File | One line |
+| --- | --- | --- |
+| `EvenDt` | `even-dt.js` | Smooths the uneven frame gaps a browser reports by snapping them to the screen's learned refresh period. |
+| `QualityGovernor` | `quality-governor.js` | Steps a quality level down or up from how long frames really take, with hysteresis. |
+| `JobPump` | `job-pump.js` | Runs queued build steps for about N milliseconds per frame, so a big pre-render never hitches a frame. |
+
+## Why it exists
+
+- Browsers report frame gaps that wobble by a millisecond or two even when every frame is presented on time. A game that moves by the raw gap shows that wobble as a faint shiver in scrolling scenery. `EvenDt` removes most of it.
+- Screens differ: a game that is fine at full quality on one machine needs fewer particles or a lower canvas resolution on another. `QualityGovernor` decides when to change level; you decide what a level means.
+- Procedural art, texture atlases and other bakes can take hundreds of milliseconds. Done in one go they freeze the page. `JobPump` lets you write the bake as a function or a generator and spreads it over frames.
+
+They were extracted from a real, shipped single-file browser game and rewritten to stand alone.
+
+## Quick start
+
+Open `demo.html` by double-click to see all three working. To use them, copy the files you want:
+
+```html
+<script src="even-dt.js"></script>
+<script src="quality-governor.js"></script>
+<script src="job-pump.js"></script>
+<script>
+  const even = new EvenDt();
+  const pump = new JobPump();
+  const gov = new QualityGovernor({
+    levels: 3,                                   // levels 0 (full), 1, 2 (lightest)
+    onChange: (level) => console.log('quality level is now', level)
+  });
+
+  // A big bake written as a generator: one slice per yield.
+  const texture = document.createElement('canvas');
+  texture.width = texture.height = 1024;
+  pump.add(function* () {
+    const g = texture.getContext('2d');
+    for (let y = 0; y < 1024; y += 32) {
+      g.fillStyle = 'hsl(' + (y / 4) + ',60%,50%)';
+      g.fillRect(0, y, 1024, 32);
+      yield;                                     // give the frame back
+    }
+  });
+
+  let last = 0;
+  function frame(now) {
+    if (last) {
+      const gap = now - last;
+      const dtMs = even.next(gap);               // smoothed gap for movement
+      gov.frame(gap, now);                       // real gap for the governor
+      pump.run(4);                               // about 4 ms of build work per frame
+      // ... move things by dtMs / 1000 seconds, then draw ...
+    }
+    last = now;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+</script>
+```
+
+In Node (for tests): `const EvenDt = require('./even-dt.js');`. Each file works both ways.
+
+## API
+
+All options are optional. Defaults are the values from the original game.
+
+### `new EvenDt(opts)`
+
+| Member | Meaning |
+| --- | --- |
+| `.next(gapMs)` | Returns the smoothed gap in ms. A value that is not a positive finite number returns `0`. |
+| `.period` | The learned screen period in ms (median of the recent gaps), `0` while warming up. |
+| `.drift` | Milliseconds currently owed, for debugging. |
+| `.reset()` | Forget everything (use after a long pause or when the window moves to another screen). |
+
+How `next()` works: gaps of `minGap` or less and `maxGap` or more are returned unchanged and not learned from. Otherwise the gap goes into a window of the last `window` gaps. After `warmup` gaps the period is the median of the window (recomputed every `refreshEvery` gaps). A gap is rounded to the nearest whole multiple of the period (1 to `maxMultiple`); if it is within `tolerance` of the period from that multiple it becomes the multiple plus a small pay-back, otherwise it is returned unchanged and the owed drift is dropped. The difference between the raw gap and the multiple is added to a drift account, of which `payback` is paid out each frame.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `minGap` | `2` | Ignore gaps at or below this (ms). |
+| `maxGap` | `60` | Ignore gaps at or above this (ms): tab switches, long stalls. |
+| `window` | `40` | How many recent gaps the median covers. |
+| `warmup` | `12` | Gaps needed before snapping starts. |
+| `refreshEvery` | `8` | Recompute the median every this many gaps. |
+| `maxMultiple` | `3` | Largest multiple of the period to snap to (2 is a dropped frame). |
+| `tolerance` | `0.3` | A gap snaps only within this fraction of the period from a multiple. |
+| `payback` | `0.04` | Fraction of the owed drift paid back per frame. |
+
+### `new QualityGovernor(opts)`
+
+| Member | Meaning |
+| --- | --- |
+| `.frame(gapMs, nowMs)` | Feed every frame: the real gap and the current time from any steady clock. |
+| `.level` | Current level, `0` (full quality) to `levels - 1` (lightest). |
+| `.average` | The smoothed frame gap in ms, for a debug overlay. |
+| `.force(n)` | Jump to level `n` (clamped). Restarts the streaks and the delay clock, and calls `onChange` if the level changed. |
+| `.hold()` | Drop the current slow streak. Call it while frames are not representative (menu open, tab hidden). |
+| `.enabled` | Set to `false` to freeze the governor. |
+
+The rule: an exponential moving average of the gap (`smoothing`) is compared with `slowAbove` and `fastBelow`. It must stay above `slowAbove` for `slowFrames` frames in a row, and `downDelay` ms must have passed since the last change, to step down one level (the average then restarts from `expectedPeriod`). It must stay below `fastBelow` for `fastMs` of real time in a row, and `upDelay` ms must have passed since the last change, to step up one level. Between the two lines nothing happens, which is the hysteresis. Gaps over `maxGap`, or not positive, are not measured and break the slow streak.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `levels` | `5` | Number of levels (`0` to `levels - 1`). |
+| `onChange` | none | `onChange(level, previousLevel)` after every change, including `force()`. |
+| `expectedPeriod` | `16.7` | Normal frame gap (ms) of this screen; sets the starting average and scales the two thresholds. |
+| `slowAbove` | `expectedPeriod * 22 / 16.7` (22 ms) | Average above this counts as slow. |
+| `fastBelow` | `expectedPeriod * 18.5 / 16.7` (18.5 ms) | Average below this counts as fast. |
+| `smoothing` | `0.06` | Weight of each new gap in the average. |
+| `slowFrames` | `100` | Slow frames in a row needed to step down. |
+| `downDelay` | `3000` | Minimum ms since the last change before stepping down. |
+| `fastMs` | `10000` | Fast time in a row (ms) needed to step up. |
+| `upDelay` | `10000` | Minimum ms since the last change before stepping up. |
+| `maxGap` | `100` | Gaps above this (ms) are ignored. |
+| `enabled` | `true` | Start enabled or frozen. |
+| `level` | `0` | Starting level (`onChange` is not called for it). |
+
+### `new JobPump(opts)`
+
+| Member | Meaning |
+| --- | --- |
+| `.add(job)` | Queue a function, a generator function, or a generator object. Returns the pump. |
+| `.run(budgetMs, minSteps = 1)` | Run steps until about `budgetMs` have passed and at least `minSteps` have run. Returns `true` while work remains. `Infinity` finishes everything now. |
+| `.size` | Jobs waiting (a half-finished generator counts as one). |
+| `.clear()` | Drop all waiting jobs; half-finished generators are closed so their `finally` blocks run. |
+
+A plain function is one step. For a generator, every `yield` ends one step. Jobs run strictly in the order added, and a generator is finished before the next job starts. The budget is checked after each step, so a frame can overshoot by at most one step. Options: `now` (clock function, default `performance.now`), `onError(err)` (a throwing job is dropped; with `onError` the queue continues, without it `run()` rethrows).
+
+## How it differs from existing open source
+
+None of these ideas is new, and the established tools below are better in the ways stated. What is offered here is three small, readable, tested files with no framework attached. I read each source named below; where I could not read the details, it says so. I did not do an exhaustive search for vanilla-JS packages, so others may exist.
+
+**`EvenDt`**
+
+- [Phaser's `TimeStep`](https://docs.phaser.io/api-documentation/class/core-timestep): has delta smoothing on by default (`smoothStep`), a moving average over a history of recent deltas (`deltaHistory`, default 10 values). The page I read does not mention snapping to the refresh rate. Phaser is better if you already use it: it is built in, and used by a great many games. `EvenDt` snaps to a learned period instead of averaging, and passes real stalls through untouched, which an average would smear over the following frames.
+- [Frankforce, "frame rate delta buffering"](https://frankforce.com/frame-rate-delta-buffering/): describes the same core idea. Its code sets the delta to `1 / refreshRate` and carries the leftover into a buffer added to the next frame, and its prose describes rounding to a whole number of vsync intervals. This is the prior art for snapping with pay-back. `EvenDt` differs in learning the period from the data (median) instead of being told the refresh rate, in only snapping gaps near a multiple, and in paying the debt back gradually.
+- [Gaffer On Games, "Fix Your Timestep"](https://gafferongames.com/post/fix_your_timestep/): the standard reference for fixed timestep, accumulator and interpolation. It does not discuss snapping. It is the better fix for physics stability (it removes the dependence on the frame gap rather than hiding the wobble) and is complementary: you can feed `EvenDt`'s output into an accumulator.
+- [Unity, "Fixing Time.deltaTime in Unity 2020.2"](https://unity.com/blog/engine-platform/fixing-time-deltatime-in-unity-2020-2-for-smoother-gameplay): fixes the wobble at the source by sampling time at a better point and later using presentation timestamps from the graphics API. That is better than any after-the-fact smoothing, but a web page cannot get those timestamps, only the `requestAnimationFrame` time. The article does not describe snapping.
+
+**`QualityGovernor`**
+
+- [drei's `PerformanceMonitor` and `AdaptiveDpr`](https://drei.docs.pmnd.rs/getting-started/introduction) (React Three Fiber): the monitor reports `onIncline` / `onDecline` / `onFallback` and keeps a 0 to 1 `factor`; `AdaptiveDpr` moves the pixel ratio between bounds. I could only read the drei site's sidebar and a [third-party copy of its docs](https://tessl.io/registry/tessl/npm-react-three--drei/files/docs/performance.md), which does not state the exact trigger rules, so I make no claim about them. They are better when you are already in React Three Fiber: they are integrated with the renderer and the pixel ratio. `QualityGovernor` has no framework, uses integer levels you define, and its slow/fast streak and delay rules are all documented and tested here.
+
+**`JobPump`**
+
+- [`scheduler.yield()`](https://developer.mozilla.org/docs/Web/API/scheduler/yield) (MDN): pauses a task so the browser can handle other work and queues the continuation with priority. It is the right tool for general page responsiveness, but MDN marks it as limited availability (not Baseline), and it hands control back to the browser rather than to your frame loop with a millisecond budget.
+- [`requestIdleCallback`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback) and [React's `scheduler` package](https://www.npmjs.com/package/scheduler): well-known cooperative scheduling in the browser. I did not read their documentation in detail for this README, so I make no specific claims. A reason one may still prefer an explicit per-frame budget in a game loop (my reasoning, not a measured result) is that the frame loop itself decides exactly when and how long to build.
+- `JobPump` is smaller and simpler than all of these: a FIFO queue, a time budget checked after each step, generator slices. It has no priorities, no cancellation of single jobs, and no yielding to input.
+
+## Limits and gotchas
+
+**All three**
+
+- Time units are milliseconds everywhere.
+- None of them touches the DOM, timers or `requestAnimationFrame`; you call them.
+
+**`EvenDt`**
+
+- It lags rather than drifts: if the learned period is off by `e` ms (the median of a noisy window typically is by a fraction of a millisecond), the smoothed clock settles about `e / payback` ms behind real time (25 times `e` at the default). Over the test streams this was under one period. The clock does not run faster or slower in the long run.
+- The owed drift is dropped whenever a gap passes through unsnapped (a real stall, or a gap further than `tolerance` from a multiple). That bounds the lag after any single event (at most `tolerance / payback`, 7.5 periods) but means the clock can slowly slip on a stream that never settles.
+- Variable-refresh screens: if the rate settles for a while, it is treated like a fixed rate. After a rate change the old period is used until the median catches up (about 20 to 30 frames), and gaps within 30% of it are snapped to the old period meanwhile. On a stream that wanders continuously, gaps are nudged by up to 0.6 of a period and the clock can slip (see the test "wandering variable-rate stream"). If you need exact times on such a screen, do not use it.
+- Gaps of 60 ms or more are not smoothed or learned from, so a 15 Hz or slower loop gets no smoothing.
+- Call `reset()` when the window may have moved to another screen.
+- A snapped gap moves by at most 0.3 of a period, plus the pay-back (usually small). Fixed-step physics still needs an accumulator (see "Fix Your Timestep").
+
+**`QualityGovernor`**
+
+- **Known limitation: a clean 30 Hz screen looks slow.** The default thresholds assume a 60 Hz screen (16.7 ms). On a screen whose normal gap is 33.3 ms the governor steps all the way down even though nothing is wrong. Pass `expectedPeriod` (for example `1000 / 30`, or the period `EvenDt` learned) and the thresholds scale with it. The governor cannot tell a 30 Hz screen from a machine struggling at 30 fps by itself; the test file demonstrates both behaviors.
+- A 120 or 144 Hz screen is treated as fast, which is correct but means it will not step down until it falls below roughly 45 fps; pass `expectedPeriod` if you want it to react at a frame rate relative to the screen.
+- It sees the gap between frames, not why it is long. A throttled background tab, a power-saving cap, or a slow video decoder looks the same as a slow GPU. Call `hold()` or skip `frame()` while paused or hidden.
+- Changes are slow by design: at least 100 slow frames and 3 seconds to step down, 10 seconds fast and 10 seconds since the last change to step up. The grace period at the start is counted from the first `frame()` call.
+- `onChange` is where you apply a level. If applying it is expensive (resizing a canvas), the next few frames will look slow; the average restarts after a step down for that reason.
+
+**`JobPump`**
+
+- **Never hold a shared scratch resource across a yield.** If every build reuses one temporary canvas, `ImageData` or typed array, fill it and use it inside one slice (before the next `yield`). Another job may run between two slices and overwrite it.
+- Keep steps small, about a millisecond. The budget is checked after a step, so one big step is one big hitch.
+- Jobs run in the order added, one at a time. A generator that never ends blocks everything behind it.
+- A plain function must not return an iterator (it would be treated as a generator).
+- `run()` called from inside a job does nothing and reports whether work remains.
+- With no `onError`, an exception from a job leaves `run()` with the failed job already dropped; call `run()` again to continue.
+- Closing a half-finished generator in `clear()` runs its `finally` blocks; put clean-up there.
+
+Differences from the original game code, on purpose: `EvenDt` recomputes the median every `refreshEvery` accepted gaps (the original, by a quirk of its length check, recomputed it every frame once its window was full). `QualityGovernor` measures its start-up grace period from the first frame it sees instead of from time zero, and takes its levels, thresholds and effects as options and a callback instead of changing game globals.
+
+## For AI agents
+
+- Run `node modules/frame-kit/test/run.js` from the repository root after any change. It must print `0 failed` and exit with code 0. For the example, run `python3 modules/frame-kit/test/check-example.py`.
+- Keep each file standalone: no imports, no dependencies, no build step, no DOM access in ``. Each file begins with the license header line and ends with the two-line dual loader (see the repository `AGENTS.md`). Keep the IIFE wrapper so nothing leaks to the global scope except the class name.
+- Invariants to preserve:
+  - The default option values are the original game's constants (listed in the API tables). A test pins the governor defaults. Do not retune them; add an option instead.
+  - `EvenDt.next()` returns the input unchanged for gaps outside `(minGap, maxGap)` and for gaps not near a multiple of the period, and never returns a negative number.
+  - `QualityGovernor` steps one level at a time; steps down need `slowFrames` slow frames and `downDelay`, steps up need `fastMs` and `upDelay`; the average restarts only on a step down.
+  - `JobPump.run()` checks its budget after a step, runs at least `minSteps` steps, and keeps FIFO order. Do not make it round-robin without a new option.
+- Do not weaken a test to make it pass. If a bound in a test looks wrong, read the matching sentence in "Limits and gotchas" first; those bounds are documented behavior.
+- Keep American English, no personal names beyond the copyright holder, and no game art or story from the source game.
+
+Related: [`fx-governor`](../fx-governor/README.md) in this repository also steps effects down when a device cannot keep up, but never steps back up. `QualityGovernor` here steps back up after a calm spell. Pick the one that matches the behavior you want.
+
+---
+Part of [JS-modules](../../README.md) · MIT License · Copyright (c) 2026 JNFoo · extracted from [Fancy, the Banana](https://github.com/JNFoo/fancy-banana)

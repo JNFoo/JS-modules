@@ -4,7 +4,7 @@
   "copyright": "JNFoo",
   "repository": "https://github.com/JNFoo/JS-modules",
   "pages": "https://jnfoo.github.io/JS-modules/",
-  "origin": "Extracted from Apple Press, https://github.com/JNFoo/apple-press (play: https://jnfoo.github.io/apple-press/)",
+  "origin": "Extracted from Apple Press, https://github.com/JNFoo/apple-press (play: https://jnfoo.github.io/apple-press/), and Fancy, the Banana, https://github.com/JNFoo/fancy-banana (play: https://jnfoo.github.io/fancy-banana/)",
   "modules": [
     {
       "id": "stage-curtains",
@@ -87,6 +87,51 @@
       "formats": "browser global, CommonJS (module.exports)"
     },
     {
+      "id": "frame-kit",
+      "global": "EvenDt, QualityGovernor, JobPump",
+      "summary": "Frame pacing for canvas games: even-dt smooths the frame time, quality-governor steps effects down and back up, job-pump spreads heavy jobs across frames.",
+      "file": "modules/frame-kit/",
+      "readme": "modules/frame-kit/README.md",
+      "demo": "modules/frame-kit/demo.html",
+      "dependencies": "none",
+      "formats": "browser globals, CommonJS (module.exports) per file",
+      "files": [
+        "even-dt.js",
+        "quality-governor.js",
+        "job-pump.js"
+      ]
+    },
+    {
+      "id": "sprite-baker",
+      "global": "SpriteBaker",
+      "summary": "Tiny software 3D rasterizer that bakes shaded sprites to canvases once at load.",
+      "file": "modules/sprite-baker/sprite-baker.js",
+      "readme": "modules/sprite-baker/README.md",
+      "demo": "modules/sprite-baker/demo.html",
+      "dependencies": "none",
+      "formats": "browser global, CommonJS (module.exports)"
+    },
+    {
+      "id": "pad-nav",
+      "global": "PadNav",
+      "summary": "Gamepad API to DOM focus: move through buttons and menus with a controller, no game code.",
+      "file": "modules/pad-nav/pad-nav.js",
+      "readme": "modules/pad-nav/README.md",
+      "demo": "modules/pad-nav/demo.html",
+      "dependencies": "none",
+      "formats": "browser global, CommonJS (module.exports)"
+    },
+    {
+      "id": "lzma-decode",
+      "global": "lzmaDecode",
+      "summary": "Small readable LZMA1 decoder (ES5), tested against Python's lzma. Browsers can only unpack gzip and deflate natively.",
+      "file": "modules/lzma-decode/lzma-decode.js",
+      "readme": "modules/lzma-decode/README.md",
+      "demo": "tools/lzma-pack/example/packed-base64.html",
+      "dependencies": "none",
+      "formats": "browser global, CommonJS (module.exports)"
+    },
+    {
       "id": "cartoon-3d-kit",
       "summary": "A written style guide plus demo for the soft, glossy cartoon 3D look done in plain CSS/SVG/canvas.",
       "file": "modules/cartoon-3d-kit/STYLE-GUIDE.md",
@@ -112,6 +157,18 @@
       "summary": "Font subsetting, safe inline-SVG tightening and a Zopfli self-extracting packer for one-file games.",
       "folder": "tools/single-file-tools",
       "readme": "tools/single-file-tools/README.md"
+    },
+    {
+      "id": "lzma-pack",
+      "summary": "Packs one HTML file into a smaller self-unpacking file with LZMA and a hash check (Python 3 standard library).",
+      "folder": "tools/lzma-pack",
+      "readme": "tools/lzma-pack/README.md"
+    },
+    {
+      "id": "fuzz-kit",
+      "summary": "Seeded, reproducible random-input fuzzer engine with weighted operations, invariants and liveness checks; Playwright and Puppeteer runners; test-hook stripper.",
+      "folder": "tools/fuzz-kit",
+      "readme": "tools/fuzz-kit/README.md"
     }
   ]
 }

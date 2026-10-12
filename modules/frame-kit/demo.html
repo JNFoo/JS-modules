@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>frame-kit example</title>
+<style>
+  :root { color-scheme: light dark; --bg: #f6f5f1; --fg: #1d1d1b; --mute: #6b6a64; --card: #fff; --line: #d9d7cf; --raw: #b0aea5; --sm: #0b7a75; --warn: #c2410c; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #161615; --fg: #ecebe6; --mute: #9a988f; --card: #201f1d; --line: #38362f; --raw: #7c7a72; --sm: #3dd6cc; --warn: #fb923c; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--fg); font: 15px/1.45 system-ui, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  h2 { font-size: 15px; margin: 0 0 8px; }
+  p.sub { margin: 0 0 16px; color: var(--mute); }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; }
+  canvas { display: block; width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; }
+  .row { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; margin-top: 8px; color: var(--mute); }
+  .row b { color: var(--fg); font-variant-numeric: tabular-nums; }
+  label { display: inline-flex; align-items: center; gap: 6px; }
+  input[type=range] { width: 160px; }
+  button { font: inherit; padding: 4px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--fg); cursor: pointer; }
+  button:disabled { opacity: .5; cursor: default; }
+  .lv { display: inline-flex; gap: 4px; }
+  .lv i { width: 26px; height: 18px; border-radius: 3px; border: 1px solid var(--line); display: inline-block; }
+  .lv i.on { background: var(--sm); border-color: var(--sm); }
+  .key i { display: inline-block; width: 12px; height: 3px; vertical-align: middle; margin-right: 4px; }
+  progress { width: 160px; }
+  .warn { color: var(--warn); }
+</style>
+</head>
+<body>
+<main>
+  <h1>frame-kit example</h1>
+  <p class="sub">Three tiny helpers. Everything here runs offline from the three files next to this page.</p>
+
+  <section>
+    <h2>1. EvenDt: raw vs smoothed frame gaps</h2>
+    <canvas id="chart" width="720" height="130"></canvas>
+    <div class="row key"><span><i style="background:var(--raw)"></i>raw gap</span><span><i style="background:var(--sm)"></i>smoothed gap (EvenDt)</span></div>
+    <div class="row">
+      <span>learned period <b id="per">0</b> ms</span>
+      <span>raw wobble (std) <b id="rs">0</b> ms</span>
+      <span>smoothed wobble (std) <b id="ss">0</b> ms</span>
+    </div>
+    <canvas id="ball" width="720" height="60" style="margin-top:10px"></canvas>
+    <div class="row"><span>The ball moves by the smoothed gap and never stops, even while the texture below is being built.</span></div>
+  </section>
+
+  <section>
+    <h2>2. QualityGovernor: level follows real frame times</h2>
+    <div class="lv" id="lv"></div>
+    <div class="row">
+      <label>extra load per frame <input id="load" type="range" min="0" max="60" value="0"> <b id="loadv">0</b> ms</label>
+      <span>average gap <b id="avg">0</b> ms</span>
+      <span>level <b id="lvn">0</b></span>
+    </div>
+    <div class="row"><span>Drag the load up: after a short delay the level steps down; set it back to 0 and it climbs again. This demo uses shorter delays than the defaults so you can see it.</span></div>
+  </section>
+
+  <section>
+    <h2>3. JobPump: a big texture built in slices</h2>
+    <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:flex-start">
+      <canvas id="prev" width="256" height="256" style="width:256px"></canvas>
+      <div>
+        <div class="row" style="margin-top:0">
+          <label>budget per frame <input id="bud" type="range" min="1" max="12" value="4"> <b id="budv">4</b> ms</label>
+        </div>
+        <div class="row">
+          <button id="go">Build 2048 x 2048 texture in slices</button>
+          <button id="blk">Build all at once (hitches)</button>
+        </div>
+        <div class="row"><progress id="prog" max="1" value="0"></progress> <b id="pct">0%</b></div>
+        <div class="row"><span>worst frame gap during the last build <b id="worst">-</b> ms</span></div>
+        <div class="row"><span id="status">idle</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="even-dt.js"></script>
+<script src="quality-governor.js"></script>
+<script src="job-pump.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+
+  var even = new EvenDt();
+  var pump = new JobPump();
+  var LEVELS = 5;
+  var lvBox = [];
+  for (var i = 0; i < LEVELS; i++) { var b = document.createElement('i'); $('lv').appendChild(b); lvBox.push(b); }
+  function showLevel(l) { for (var i = 0; i < LEVELS; i++) lvBox[i].className = i >= LEVELS - 1 - l ? 'on' : ''; $('lvn').textContent = l; }
+  // Level 0 is full quality (all boxes lit); each step down turns one box off. Shorter delays than the defaults, for the demo only.
+  var gov = new QualityGovernor({ levels: LEVELS, slowFrames: 40, downDelay: 1500, fastMs: 4000, upDelay: 4000, onChange: showLevel });
+  showLevel(0);
+
+  // ----- texture build: one generator, one yield per 16 rows. The ImageData is created and used inside one slice (nothing shared is held across a yield).
+  var SIZE = 2048, ROWS = 16;
+  var big = document.createElement('canvas'); big.width = big.height = SIZE;
+  var bigG = big.getContext('2d');
+  var prevC = $('prev'), prevG = prevC.getContext('2d');
+  var building = false, sliceDone = 0, sliceTotal = SIZE / ROWS;
+  function hash(x, y) { var h = (x * 374761393 + y * 668265263) | 0; h = (h ^ (h >>> 13)) * 1274126177 | 0; return ((h ^ (h >>> 16)) >>> 0) / 4294967296; }
+  function vnoise(x, y) {
+    var xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi;
+    var u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+    var a = hash(xi, yi), c = hash(xi + 1, yi), d = hash(xi, yi + 1), e = hash(xi + 1, yi + 1);
+    return a + (c - a) * u + (d - a) * v + (a - c - d + e) * u * v;
+  }
+  function* buildTexture() {
+    for (var y0 = 0; y0 < SIZE; y0 += ROWS) {
+      var img = bigG.createImageData(SIZE, ROWS), px = img.data, o = 0;
+      for (var y = 0; y < ROWS; y++) for (var x = 0; x < SIZE; x++) {
+        var n = 0, amp = .5, f = 1 / 160;
+        for (var k = 0; k < 5; k++) { n += vnoise(x * f + k * 7, (y0 + y) * f + k * 3) * amp; f *= 2; amp *= .5; }
+        var r = n * 255;
+        px[o++] = r * .55 + 40; px[o++] = r * .8 + 30; px[o++] = r + 20; px[o++] = 255;
+      }
+      bigG.putImageData(img, 0, y0);
+      sliceDone++;
+      yield;
+    }
+  }
+  var worst = 0, buildStart = 0, blocked = false, measureUntil = 0;
+  function startBuild(all) {
+    if (building) return;
+    building = true; sliceDone = 0; worst = 0; blocked = all; buildStart = performance.now();
+    $('go').disabled = $('blk').disabled = true;
+    $('status').textContent = all ? 'building everything in one frame...' : 'building in slices...';
+    pump.add(buildTexture());
+    pump.add(function () { building = false; measureUntil = performance.now() + 500; $('go').disabled = $('blk').disabled = false; $('status').textContent = 'done in ' + Math.round(performance.now() - buildStart) + ' ms'; });
+    if (all) setTimeout(function () { pump.run(Infinity); }, 30);   // the page cannot repaint or animate while this runs
+  }
+  $('go').onclick = function () { startBuild(false); };
+  $('blk').onclick = function () { startBuild(true); };
+  $('bud').oninput = function () { $('budv').textContent = this.value; };
+  $('load').oninput = function () { $('loadv').textContent = this.value; };
+
+  // ----- charts and animation
+  var chart = $('chart'), cg = chart.getContext('2d'), CW = chart.width, CH = chart.height;
+  var ball = $('ball'), bg = ball.getContext('2d');
+  var N = 180, rawH = [], smH = [];
+  function css(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  function std(a) { if (!a.length) return 0; var m = 0, v = 0, i; for (i = 0; i < a.length; i++) m += a[i]; m /= a.length; for (i = 0; i < a.length; i++) v += (a[i] - m) * (a[i] - m); return Math.sqrt(v / a.length); }
+  function drawChart() {
+    var raw = css('--raw'), sm = css('--sm'), line = css('--line'), i, x, y, max = 50;
+    cg.clearRect(0, 0, CW, CH);
+    cg.strokeStyle = line; cg.lineWidth = 1; cg.fillStyle = css('--mute'); cg.font = '11px system-ui';
+    [0, 16.7, 33.3, 50].forEach(function (v) { y = CH - 14 - v / max * (CH - 22); cg.beginPath(); cg.moveTo(0, y); cg.lineTo(CW, y); cg.stroke(); cg.fillText(v + ' ms', 4, y - 2); });
+    var step = CW / N;
+    cg.strokeStyle = raw; cg.lineWidth = 1.5; cg.beginPath();
+    for (i = 0; i < rawH.length; i++) { x = i * step; y = CH - 14 - Math.min(max, rawH[i]) / max * (CH - 22); if (i) cg.lineTo(x, y); else cg.moveTo(x, y); }
+    cg.stroke();
+    cg.strokeStyle = sm; cg.lineWidth = 2; cg.beginPath();
+    for (i = 0; i < smH.length; i++) { x = i * step; y = CH - 14 - Math.min(max, smH[i]) / max * (CH - 22); if (i) cg.lineTo(x, y); else cg.moveTo(x, y); }
+    cg.stroke();
+  }
+  var bx = 20, bv = 260;   // pixels and pixels per second
+  function drawBall(dt) {
+    bx += bv * dt / 1000; if (bx > ball.width - 16) { bx = ball.width - 16; bv = -Math.abs(bv); } if (bx < 16) { bx = 16; bv = Math.abs(bv); }
+    bg.clearRect(0, 0, ball.width, ball.height); bg.fillStyle = css('--sm'); bg.beginPath(); bg.arc(bx, ball.height / 2, 12, 0, 6.2832); bg.fill();
+  }
+  function burn(ms) { var e = performance.now() + ms; while (performance.now() < e) { /* simulated heavy frame */ } }
+
+  var last = 0, shown = 0;
+  function frame(now) {
+    if (last) {
+      var gap = now - last;
+      if (gap > 0) {
+        var sm = even.next(gap);
+        rawH.push(gap); smH.push(sm); if (rawH.length > N) { rawH.shift(); smH.shift(); }
+        gov.frame(gap, now);
+        if (building || now < measureUntil) worst = Math.max(worst, gap);
+        var L = +$('load').value; if (L > 0) burn(L);
+        if (building && !blocked) pump.run(+$('bud').value);
+        drawBall(Math.min(sm, 50));
+        if (now - shown > 200) {
+          shown = now;
+          $('per').textContent = even.period.toFixed(2);
+          $('rs').textContent = std(rawH.slice(-120)).toFixed(2);
+          $('ss').textContent = std(smH.slice(-120)).toFixed(2);
+          $('avg').textContent = gov.average.toFixed(1);
+          $('prog').value = sliceDone / sliceTotal; $('pct').textContent = Math.round(sliceDone / sliceTotal * 100) + '%';
+          $('worst').textContent = worst ? worst.toFixed(0) : '-';
+          if (worst > 40) $('worst').className = 'warn'; else $('worst').className = '';
+          if (sliceDone) prevG.drawImage(big, 0, 0, prevC.width, prevC.height);
+        }
+        drawChart();
+      }
+    }
+    last = now;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

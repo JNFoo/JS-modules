@@ -1,5 +1,5 @@
 # JS-modules
-> Small, dependency-free JavaScript modules and tools for single-file browser games, extracted from Apple Press. MIT License, Copyright (c) 2026 JNFoo.
+> Small, dependency-free JavaScript modules and tools for single-file browser games, extracted from Apple Press and Fancy, the Banana. MIT License, Copyright (c) 2026 JNFoo.
 
 Each module is one file usable as a browser global or via require(). Start with modules.json (machine-readable index).
 
@@ -12,11 +12,17 @@ Each module is one file usable as a browser global or via require(). Start with 
 - [fly-to-mini](https://github.com/JNFoo/JS-modules/blob/main/modules/fly-to-mini/README.md): A big element scrolls away and a copy flies to its sticky mini version (and back). (global FlyToMini)
 - [sticker-text](https://github.com/JNFoo/JS-modules/blob/main/modules/sticker-text/README.md): Die-cut sticker lettering in plain CSS text-shadow rings, no images. (global StickerText)
 - [idle-core](https://github.com/JNFoo/JS-modules/blob/main/modules/idle-core/README.md): Tested maths for idle/clicker games: costs, milestones, away income, boost queue, number format. (global IdleCore)
+- [frame-kit](https://github.com/JNFoo/JS-modules/blob/main/modules/frame-kit/README.md): Frame pacing for canvas games: even-dt smooths the frame time, quality-governor steps effects down and back up, job-pump spreads heavy jobs across frames. (global EvenDt, QualityGovernor, JobPump)
+- [sprite-baker](https://github.com/JNFoo/JS-modules/blob/main/modules/sprite-baker/README.md): Tiny software 3D rasterizer that bakes shaded sprites to canvases once at load. (global SpriteBaker)
+- [pad-nav](https://github.com/JNFoo/JS-modules/blob/main/modules/pad-nav/README.md): Gamepad API to DOM focus: move through buttons and menus with a controller, no game code. (global PadNav)
+- [lzma-decode](https://github.com/JNFoo/JS-modules/blob/main/modules/lzma-decode/README.md): Small readable LZMA1 decoder (ES5), tested against Python's lzma. Browsers can only unpack gzip and deflate natively. (global lzmaDecode)
 
 ## Tools
 - [fuzz-play](https://github.com/JNFoo/JS-modules/blob/main/tools/fuzz-play/README.md): Random-play robot with invariants (Playwright), plus an in-page version for Firefox.
 - [marionette-lite](https://github.com/JNFoo/JS-modules/blob/main/tools/marionette-lite/README.md): Drive Firefox from Python with the standard library only.
 - [single-file-tools](https://github.com/JNFoo/JS-modules/blob/main/tools/single-file-tools/README.md): Font subsetting, safe inline-SVG tightening and a Zopfli self-extracting packer for one-file games.
+- [lzma-pack](https://github.com/JNFoo/JS-modules/blob/main/tools/lzma-pack/README.md): Packs one HTML file into a smaller self-unpacking file with LZMA and a hash check (Python 3 standard library).
+- [fuzz-kit](https://github.com/JNFoo/JS-modules/blob/main/tools/fuzz-kit/README.md): Seeded, reproducible random-input fuzzer engine with weighted operations, invariants and liveness checks; Playwright and Puppeteer runners; test-hook stripper.
 
 ## Docs
 - [README](https://github.com/JNFoo/JS-modules/blob/main/README.md): overview and install

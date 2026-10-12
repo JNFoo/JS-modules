@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>pad-nav test page</title>
+<style>
+  body { margin: 0; font: 14px sans-serif; }
+  button { width: 80px; height: 40px; margin: 0; }
+  .pad-focus { outline: 3px solid #7a3cff; }
+  #grid { position: absolute; left: 20px; top: 20px; width: 360px; display: grid; grid-template-columns: repeat(3, 80px); gap: 40px 60px; }
+  #g00{grid-area:1/1} #g01{grid-area:1/2} #g02{grid-area:1/3} #g10{grid-area:2/1} #g11{grid-area:2/2} #g12{grid-area:2/3} #g20{grid-area:3/1} #g21{grid-area:3/2} #g22{grid-area:3/3}
+  #outside { position: absolute; left: 20px; top: 330px; }
+  #panel { position: absolute; left: 450px; top: 20px; width: 140px; height: 150px; overflow: auto; border: 1px solid #888; }
+  #panel button { display: block; margin: 0 0 14px 10px; }
+  #tail { height: 400px; }
+  #hint { position: absolute; left: 20px; top: 400px; }
+</style></head><body>
+<div id="grid">
+  <button id="g00">g00</button><button id="g01">g01</button><button id="g02">g02</button>
+  <button id="g10">g10</button><button id="g11">g11</button><button id="g12">g12</button>
+  <button id="g20">g20</button><button id="g21">g21</button><button id="g22">g22</button>
+</div>
+<button id="outside">outside</button>
+<div id="panel">
+  <button id="p0">p0</button><button id="p1">p1</button><button id="p2">p2</button>
+  <button id="p3" disabled>p3 (disabled)</button>
+  <button id="p4" style="display:none">p4 (hidden)</button>
+  <button id="p5" style="visibility:hidden">p5 (invisible)</button>
+  <button id="p6">p6</button><button id="p7">p7</button><button id="p8">p8</button><button id="p9">p9</button>
+  <div id="tail">tail</div>
+</div>
+<div id="hint" hidden></div>
+<script src="../pad-nav.js"></script>
+<script>
+  // ---- test harness: a fake pad, a virtual clock, an event log ----
+  window.LOG = [];
+  window.SCOPE = document.getElementById('grid');
+  window.T = 0;
+  window.FAKE = { id: 'fake', index: 0, connected: true, mapping: 'standard', axes: [0, 0, 0, 0], buttons: [] };
+  for (var i = 0; i < 17; i++) FAKE.buttons.push({ pressed: false, value: 0 });
+  var NAMES = { a: 0, b: 1, start: 9, up: 12, down: 13, left: 14, right: 15 };
+  window.pn = null;
+  window.make = function (extra, useDefaultPads) {
+    if (pn) pn.destroy();
+    var o = {
+      getScope: function () { return window.SCOPE; },
+      onBack: function (s) { LOG.push('back'); },
+      onStart: function (s) { LOG.push('start'); },
+      hintEl: document.getElementById('hint')
+    };
+    if (!useDefaultPads) o.getPads = function () { return [window.FAKE]; };
+    for (var k in extra) o[k] = extra[k];
+    pn = new PadNav(o);
+    return true;
+  };
+  window.hold = function (names, axes) {
+    FAKE.buttons.forEach(function (b) { b.pressed = false; b.value = 0; });
+    names.forEach(function (n) { FAKE.buttons[NAMES[n]].pressed = true; FAKE.buttons[NAMES[n]].value = 1; });
+    FAKE.axes = axes || [0, 0, 0, 0];
+  };
+  window.tick = function (dt) { T += dt; pn.step(T); return state(); };
+  window.state = function () {
+    var r = document.querySelector('.pad-focus');
+    return { ring: r ? r.id : null, active: document.activeElement.id || null, T: T, hint: document.getElementById('hint').hidden ? '' : document.getElementById('hint').textContent };
+  };
+  window.reset = function () {
+    LOG.length = 0; hold([]); document.activeElement.blur && document.activeElement.blur();
+    document.getElementById('panel').scrollTop = 0; window.scrollTo(0, 0);
+    window.SCOPE = document.getElementById('grid');
+  };
+  document.addEventListener('click', function (e) { if (e.target.id) LOG.push('click:' + e.target.id); });
+</script>
+</body></html>

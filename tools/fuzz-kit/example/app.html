@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>fuzz-kit example app</title>
+<body style="font:16px system-ui;margin:2rem;max-width:30rem">
+<h1>Tap shop</h1>
+<p>A tiny stateful app for the fuzzer to chew on. Tap to earn coins, buy upgrades with coins, pause and resume. Lives tick down while playing.</p>
+<p id="out"></p>
+<button id="tap">Tap</button> <button id="pause">Pause (p)</button> <button id="buy">Buy upgrade (10 coins)</button> <button id="restart">Restart</button>
+<p><small>Open with <code>#bug</code> at the end of the address to switch on a planted bug: buying while paused skips the coin check.</small></p>
+<script>
+(function () {
+  var BUG = location.hash.indexOf('bug') >= 0;
+  var st = { state: 'title', coins: 0, power: 1, lives: 3, t: 0 };
+  function out() { document.getElementById('out').textContent = st.state + ' | coins ' + st.coins + ' | power ' + st.power + ' | lives ' + st.lives; }
+  function tap() { if (st.state === 'title' || st.state === 'over') { reset(); st.state = 'play'; } else if (st.state === 'play') st.coins += st.power; out(); }
+  function pause() { if (st.state === 'play') st.state = 'paused'; else if (st.state === 'paused') st.state = 'play'; out(); }
+  function buy() { if (st.coins >= 10 || (BUG && st.state === 'paused')) { st.coins -= 10; st.power++; } out(); }   // the planted bug: no coin check while paused
+  function reset() { st.state = 'title'; st.coins = 0; st.power = 1; st.lives = 3; st.t = 0; out(); }
+  function step(n) { while (n-- > 0) { if (st.state !== 'play') continue; st.t++; if (st.t % 100 === 0) { st.lives--; if (st.lives <= 0) st.state = 'over'; } } out(); }
+  document.getElementById('tap').onclick = tap; document.getElementById('pause').onclick = pause; document.getElementById('buy').onclick = buy; document.getElementById('restart').onclick = reset;
+  addEventListener('keydown', function (e) { if (e.key === 'p') pause(); });
+  var timer = setInterval(function () { step(1); }, 10); out();
+  /*TEST_HOOK_START*/
+  window.__app = { st: st, tap: tap, pause: pause, buy: buy, reset: reset, step: step, stop: function () { clearInterval(timer); } };   // the test handle: stripped from the shipped copy
+  /*TEST_HOOK_END*/
+})();
+</script>
